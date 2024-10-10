@@ -23,9 +23,7 @@
     <a-scene embedded arjs="sourceType: webcam;">
         <!-- Marker 1 -->
         <a-marker type='pattern' url='marker1.patt'> <!-- Change to your marker's .patt file -->
-            <a-plane id="videoPlane1" position="0 0 0" rotation="-90 0 0" 
-                     width="1" height="1"
-                     material="src: #video1; transparent: true; repeat: 1 1;" visible="false">
+            <a-plane id="videoPlane1" rotation="-90 0 0" material="src: #video1; transparent: true;" visible="false">
             </a-plane>
         </a-marker>
 
@@ -38,34 +36,49 @@
             return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         }
 
-        // Function to adjust plane size and position based on device
-        function adjustPlaneSizeAndPosition(plane) {
-            if (isMobile()) {
-                // On mobile, adjust the video plane closer to the marker
-                plane.setAttribute('position', '0 0.01 0'); // Place the video very close to the marker
-                plane.setAttribute('width', '0.8'); // Adjust width based on mobile display
-                plane.setAttribute('height', '0.8');
-            } else {
-                // On desktop, keep default size
-                plane.setAttribute('position', '0 0.001 0');
-                plane.setAttribute('width', '1');
-                plane.setAttribute('height', '1');
-            }
-        }
-
-        // Marker 1
+        // Marker 1 elements
         const video1 = document.getElementById('video1');
         const videoPlane1 = document.getElementById('videoPlane1');
         const marker1 = document.querySelector('a-marker[url="marker1.patt"]');
 
-        // Adjust the size and position of the video plane on page load
-        adjustPlaneSizeAndPosition(videoPlane1);
+        // Function to set custom position and size
+        function setCustomSizeAndPosition(plane, options) {
+            // Set plane size
+            plane.setAttribute('width', options.width);
+            plane.setAttribute('height', options.height);
 
+            // Set plane position (closer or farther from the marker)
+            plane.setAttribute('position', `${options.x} ${options.y} ${options.z}`);
+        }
+
+        // Marker found event
         marker1.addEventListener('markerFound', () => {
             video1.play();
             videoPlane1.setAttribute('visible', true); // Show video plane 1
+
+            // Set custom size and position based on the device
+            if (isMobile()) {
+                // Customize these values for mobile view
+                setCustomSizeAndPosition(videoPlane1, {
+                    width: 1.5, // Adjust this value to control the size of the video plane
+                    height: 1,  // Adjust this value to control the height of the video plane
+                    x: 0,       // Horizontal position of the plane relative to the marker
+                    y: 0.02,    // Height of the plane above the marker (increase if too close)
+                    z: 0        // Depth of the plane in front of the marker (increase to push farther away)
+                });
+            } else {
+                // Customize these values for desktop/laptop view
+                setCustomSizeAndPosition(videoPlane1, {
+                    width: 1,   // Desktop size of the video plane
+                    height: 1,  // Desktop height of the video plane
+                    x: 0,       // Horizontal position of the plane
+                    y: 0.01,    // Height of the plane above the marker
+                    z: 0        // Depth in front of the marker
+                });
+            }
         });
 
+        // Marker lost event
         marker1.addEventListener('markerLost', () => {
             video1.pause();
             video1.currentTime = 0; // Reset video 1
