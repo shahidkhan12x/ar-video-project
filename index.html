@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Marker Video</title>
+    <title>Marker Video</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
@@ -12,21 +12,21 @@
     </style>
 </head>
 <body>
-    <div id="info">Point your camera at the markers!</div>
+    <div id="info">Point your camera at the marker!</div>
 
-    <!-- Video for Marker 1 -->
+    <!-- Video for Marker -->
     <video id="video1" autoplay loop muted style="display:none;" preload="auto">
-        <source src="video1.mp4" type="video/mp4"> <!-- Replace with your first video path -->
+        <source src="video1.mp4" type="video/mp4"> <!-- Replace with your video path -->
         Your browser does not support the video tag.
     </video>
 
-    <a-scene embedded arjs='sourceType: webcam;'>
-
+    <a-scene embedded arjs="sourceType: webcam;">
         <!-- Marker 1 -->
-        <a-marker type='pattern' url='marker1.patt'> <!-- Change to your first marker's .patt file -->
+        <a-marker type='pattern' url='marker1.patt'> <!-- Change to your marker's .patt file -->
             <a-plane id="videoPlane1" position="0 0 0" rotation="-90 0 0" 
-                     width="1" height="1" 
-                     material="src: #video1; transparent: true; repeat: 1 1;" visible="false"></a-plane>
+                     width="1" height="1"
+                     material="src: #video1; transparent: true; repeat: 1 1;" visible="false">
+            </a-plane>
         </a-marker>
 
         <a-entity camera></a-entity>
@@ -41,13 +41,13 @@
         // Function to adjust plane size and position based on device
         function adjustPlaneSizeAndPosition(plane) {
             if (isMobile()) {
-                // On mobile, make the video plane closer and smaller for better viewing
-                plane.setAttribute('position', '0 0.5 0'); // Move closer to the marker
-                plane.setAttribute('width', '0.5'); // Reduce size of the video on mobile
-                plane.setAttribute('height', '0.5');
+                // On mobile, adjust the video plane closer to the marker
+                plane.setAttribute('position', '0 0.01 0'); // Place the video very close to the marker
+                plane.setAttribute('width', '0.8'); // Adjust width based on mobile display
+                plane.setAttribute('height', '0.8');
             } else {
-                // On desktop, use default size
-                plane.setAttribute('position', '0 0 0');
+                // On desktop, keep default size
+                plane.setAttribute('position', '0 0.001 0');
                 plane.setAttribute('width', '1');
                 plane.setAttribute('height', '1');
             }
