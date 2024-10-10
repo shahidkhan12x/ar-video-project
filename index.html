@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiple Markers with Videos</title>
+    <title>Responsive Marker Video</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
@@ -20,12 +20,6 @@
         Your browser does not support the video tag.
     </video>
 
-    <!-- Video for Marker 2 -->
-    <video id="video2" autoplay loop muted style="display:none;" preload="auto">
-        <source src="video2.mp4" type="video/mp4"> <!-- Replace with your second video path -->
-        Your browser does not support the video tag.
-    </video>
-
     <a-scene embedded arjs='sourceType: webcam;'>
 
         <!-- Marker 1 -->
@@ -35,21 +29,37 @@
                      material="src: #video1; transparent: true; repeat: 1 1;" visible="false"></a-plane>
         </a-marker>
 
-        <!-- Marker 2 -->
-        <a-marker type='pattern' url='marker2.patt'> <!-- Change to your second marker's .patt file -->
-            <a-plane id="videoPlane2" position="0 0 0" rotation="-90 0 0" 
-                     width="1" height="1" 
-                     material="src: #video2; transparent: true; repeat: 1 1;" visible="false"></a-plane>
-        </a-marker>
-
         <a-entity camera></a-entity>
     </a-scene>
 
     <script>
+        // Utility function to detect mobile devices
+        function isMobile() {
+            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        }
+
+        // Function to adjust plane size and position based on device
+        function adjustPlaneSizeAndPosition(plane) {
+            if (isMobile()) {
+                // On mobile, make the video plane closer and smaller for better viewing
+                plane.setAttribute('position', '0 0.5 0'); // Move closer to the marker
+                plane.setAttribute('width', '0.5'); // Reduce size of the video on mobile
+                plane.setAttribute('height', '0.5');
+            } else {
+                // On desktop, use default size
+                plane.setAttribute('position', '0 0 0');
+                plane.setAttribute('width', '1');
+                plane.setAttribute('height', '1');
+            }
+        }
+
         // Marker 1
         const video1 = document.getElementById('video1');
         const videoPlane1 = document.getElementById('videoPlane1');
         const marker1 = document.querySelector('a-marker[url="marker1.patt"]');
+
+        // Adjust the size and position of the video plane on page load
+        adjustPlaneSizeAndPosition(videoPlane1);
 
         marker1.addEventListener('markerFound', () => {
             video1.play();
@@ -60,22 +70,6 @@
             video1.pause();
             video1.currentTime = 0; // Reset video 1
             videoPlane1.setAttribute('visible', false); // Hide video plane 1
-        });
-
-        // Marker 2
-        const video2 = document.getElementById('video2');
-        const videoPlane2 = document.getElementById('videoPlane2');
-        const marker2 = document.querySelector('a-marker[url="marker2.patt"]');
-
-        marker2.addEventListener('markerFound', () => {
-            video2.play();
-            videoPlane2.setAttribute('visible', true); // Show video plane 2
-        });
-
-        marker2.addEventListener('markerLost', () => {
-            video2.pause();
-            video2.currentTime = 0; // Reset video 2
-            videoPlane2.setAttribute('visible', false); // Hide video plane 2
         });
     </script>
 </body>
